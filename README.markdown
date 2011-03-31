@@ -10,7 +10,7 @@ REEgion Select is an EE2 plugin and fieldtype that displays a dropdown <select> 
 
 To use the fieldtype, simply install and then choose REEgion Select from the fieldtype menu when creating a new custom field (or Matrix field), then choose which kind of regions you'd like to display.
 
-In your templates, display your custom field using either {field_name:name} ((or simply {field_name}) to display the name of the region  (i.e., United States), or {field_name:alpha2} to display the code for the region (i.e., US).
+In your templates, display your custom field using {field_name:name} ((or simply {field_name}) to display the name of the region (i.e., United States); {field_name:alpha2} to display the ISO 3166-2 code for the country, state, or province (i.e., US); or use {field_name:alpha3} to display the ISO 3166-1 code for the country (i.e., USA).
 
 ##Plugin Usage
 
