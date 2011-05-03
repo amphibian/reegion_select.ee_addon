@@ -28,36 +28,29 @@ Use the following EE tags to generate each type of dropdown in your templates:
 
 ##Plugin Parameters
 
-REEgion Select accepts seven optional parameters:
+REEgion Select accepts ten optional parameters:
 
 - `name=""`
-
-   Value for the "name" attribute of the <select> menu. Defaults: "country", "state", "province", "county", "province_state".
-
+Value for the "name" attribute of the <select> menu. Defaults: "country", "state", "province", "county", "province_state".
 - `type=""`
-
-   "alpha2" will use use the ISO 3166-2 abbreviation as the <option> value for countries, states, and provinces. "alpha3" will use use the ISO 3166-1 abbreviation as the <option> value for countries. "name" will use the region name as the value. Default: "name".
-
+`alpha2` will use use the ISO 3166-2 abbreviation as the <option> value for countries, states, and provinces. `alpha3` will use use the ISO 3166-1 abbreviation as the <option> value for countries. "name" will use the region name as the value. Default: `name`.
 - `selected=""`
-
-   Value of the <option> element that should be selected by default.
-
+Value of the <option> element that should be selected by default.
+- `title=""`
+a title or heading for the <select> menu. Defaults to "Select a (Country/State/Province/etc)".
 - `id=""`
-
-   Value for the "id" attribute of the <select> menu.
-
+Value for the `id` attribute of the <select> menu.
 - `class=""`
-
-   Value for the "class" attribute of the <select> menu.
-
+Value for the `class` attribute of the <select> menu. Defaults to `reegion_select`.
+- `tabindex=""`
+Value for the `tabindex` attribute of the <select> menu.
 - `show=""`
-
-   A pipe-delimited list of values to show, if you don't want all of the default values to display. (i.e. show="CA|NY|OH|MI")
-
-- `null_divider="false"`
-
-   Whether or not to include a divider option with a null value at the top of the menu. Defaults to "true". 
+A pipe-delimited list of values to show, if you don't want all of the default values to display. (e.g., `show="CA|NY|OH|MI"`)
+- `hide=""`
+A pipe-delimited list of values to hide, if you don't want all of the default values to display. (e.g., `hide="Canada|United States|Mexico"`)
+- `null_divider="n"`
+Whether or not to include a divider option with a null value at the top of the menu. Defaults to `y`. 
    
 ##Compatibility
 
-This version of REEgion Select is only compatible with ExpressionEngine 2.1.3 or higher. The ExpressionEngine 1.6-compatible version [can be found here](http://github.com/amphibian/pi.reegion_select.ee_addon).
+This version of REEgion Select is only compatible with ExpressionEngine 2.1.3 or higher. The ExpressionEngine 1.6-compatible version [can be found here](http://github.com/amphibian/pi.reegion_select.ee_addon). REEgion Select fields are optimized for [Low Search](http://devot-ee.com/add-ons/low-search/) indexing.

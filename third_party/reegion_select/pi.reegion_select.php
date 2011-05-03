@@ -183,12 +183,14 @@ class Reegion_select {
 		
 		{exp:reegion_select:provinces_states}
 		
-		REEgion Select accepts five optional parameters:
+		REEgion Select accepts ten optional parameters:
 		
 		name="" - value for the "name" attribute of the <select> menu. Defaults: "country", "state", "province", "county", "province_state".
 		
 		type="" - "alpha2" will use use the ISO 3166-2 abbreviation as the <option> value for countries, states, and provinces. "alpha3" will use use the ISO 3166-1 abbreviation as the <option> value for countries. "name" will use the region name as the value. Default: "name".
 		
+		title="" - a title or heading for the <select> menu. Defaults to "Select a (Country/State/Province/etc)".
+
 		id="" - value for the "id" attribute of the <select> menu.
 		
 		class="" - value for the "class" attribute of the <select> menu.
