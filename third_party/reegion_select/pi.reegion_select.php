@@ -21,7 +21,7 @@
 
 $plugin_info = array(
 	'pi_name'			=> 'REEgion Select',
-	'pi_version'		=> '2.0.1',
+	'pi_version'		=> '2.0.2',
 	'pi_author'			=> 'Derek Hogue',
 	'pi_author_url'		=> 'http://github.com/amphibian/reegion_select.ee2_addon',
 	'pi_description'	=> 'Displays a drop down select menu of countries, US states, Canadian provinces, or UK counties.',
@@ -37,7 +37,8 @@ class Reegion_select {
 	function Reegion_select()
 	{
 		$this->EE =& get_instance();
-	
+		$this->EE->load->helper('form');
+		$this->EE->lang->loadfile('reegion_select');		
 	}
 	/**
 	 * Display the dropdown menu.
@@ -49,24 +50,37 @@ class Reegion_select {
 	 * @param string $label Text to be appended to the phrase "Select a" as the first option of the <select> menu.
 	 */
 	
-	function dropdown_builder($list, $name, $label)
+	function dropdown_builder($list, $name)
 	{
 		include PATH_THIRD.'reegion_select/libraries/regions.php';
 		
 		$type = $this->EE->TMPL->fetch_param('type', 'name');
 		$name = $this->EE->TMPL->fetch_param('name', $name);
-		$id = ' id="'.$this->EE->TMPL->fetch_param('id', 'reegion_select').'"';
-		$class = ' class="'.$this->EE->TMPL->fetch_param('class', 'reegion_select').'"';
+		$id = $this->EE->TMPL->fetch_param('id', FALSE);
+		$class = $this->EE->TMPL->fetch_param('class', 'reegion_select');
+		$tabindex = $this->EE->TMPL->fetch_param('tabindex', FALSE);
 		$selected = $this->EE->TMPL->fetch_param('selected', '');
-		$show = $this->EE->TMPL->fetch_param('show', '');
-		$null_divider = $this->EE->TMPL->fetch_param('null_divider', 'true');
+		$show = $this->EE->TMPL->fetch_param('show', FALSE);
+		$hide = $this->EE->TMPL->fetch_param('hide', FALSE);
+		$title = $this->EE->TMPL->fetch_param('title', $this->EE->lang->line('rs_select').' '.$this->EE->lang->line('rs_'.$name));
+		$null_divider = $this->EE->TMPL->fetch_param('null_divider', 'y');
 		
-		$r = '<select name="' . $name . '"' . $id . $class . '>
-	<option value="">Select a ' . $label . '</option>
-	';
-		$r .= ($null_divider == 'true') ? '<option value="">--------------------</option>
-		' : '';
-		
+		$extra = 'class="'.trim($class).'"';
+		if($id)
+		{
+			$extra .= ' id="'.trim($id).'"';
+		}
+		if($tabindex)
+		{
+			$extra .= ' tabindex="'.intval($tabindex).'"';
+		}
+
+		$options = array('' => $title);
+		if($null_divider == 'y')
+		{
+			$options[] = '--------------------';
+		}
+				
 		switch($list)
 		{
 			case 'countries':
@@ -79,16 +93,17 @@ class Reegion_select {
 				$regions = $provinces;
 				break;
 		 	case 'provinces_states':
-				$regions = array_merge($provinces, $states);
+				$regions[$this->EE->lang->line('rs_provinces')] = $provinces;
+				$regions[$this->EE->lang->line('rs_states')] = $states;
 				break;
 			case 'ukcounties' :
 				$regions = $ukcounties;
 				break;				
 		}
 			
-		foreach ($regions as $k => $v)
+		foreach($regions as $k => $label)
 		{
-			$val = $v;
+			$val = $label;
 			switch($type) {
 				case 'alpha2':
 					if(!is_numeric($k))
@@ -103,105 +118,96 @@ class Reegion_select {
 					}
 					break;
 			}
-			if($show == '' || in_array($val, explode('|', $show)))
+			if(($show == FALSE || in_array($val, explode('|', $show))) && ($hide == FALSE || !in_array($val, explode('|', $hide))))
 			{
-				$sel = ($val == $selected) ? ' selected="selected"' : '';
-				$r .= '<option value="' . $val . '"' . $sel . '>' . $v . '</option>
-				';
+				$options[$val] = $label;
 			}
 		}
-		$r .= '</select>';
 		
-		return $r;	
+		return form_dropdown($name, $options, $selected, $extra);
 	}
 
 
 	function countries()
 	{
-		return $this->dropdown_builder("countries","country","country");
+		return $this->dropdown_builder('countries','country');
 	}
 
 	
 	function states()
 	{
-		return $this->dropdown_builder("states","state","state");		
+		return $this->dropdown_builder('states','state');		
 	}
 
 	
 	function provinces()
 	{
-		return $this->dropdown_builder("provinces","province","province");
+		return $this->dropdown_builder('provinces','province');
 	}
 	
 	
 	function ukcounties()
 	{
-		return $this->dropdown_builder("ukcounties","county","county");	
+		return $this->dropdown_builder('ukcounties','county');	
 	}
 	
 	
 	function provinces_states()
 	{
-		return $this->dropdown_builder('provinces_states',"province_state","province or state");
+		return $this->dropdown_builder('provinces_states','province_state');
 	}
 	
-
-// ----------------------------------------
-//  Plugin Usage
-// ----------------------------------------
-
-// This function describes how the plugin is used.
-//  Make sure and use output buffering
-
-function usage()
-{
-ob_start(); 
-?>
-
-REEgion Select will display a dropdown <select> list of:
-
-- countries (based on the ISO 3166-1 list of countries, dependent territories, and special areas of geographical interest)
-- US states (based on the USPS official list of US states and possessions)
-- Canadian provinces and territories
-- UK counties
-- Canadian provinces and US states together
-
-Use the following EE tags to generate each type of dropdown:
-
-{exp:reegion_select:countries}
-
-{exp:reegion_select:states}
-
-{exp:reegion_select:provinces}
-
-{exp:reegion_select:ukcounties}
-
-{exp:reegion_select:provinces_states}
-
-REEgion Select accepts five optional parameters:
-
-name="" - value for the "name" attribute of the <select> menu. Defaults: "country", "state", "province", "county", "province_state".
-
-type="" - "alpha2" will use use the ISO 3166-2 abbreviation as the <option> value for countries, states, and provinces. "alpha3" will use use the ISO 3166-1 abbreviation as the <option> value for countries. "name" will use the region name as the value. Default: "name".
-
-selected="" - value of the <option> element that should be selected by default.
-
-id="" - value for the "id" attribute of the <select> menu.
-
-class="" - value for the "class" attribute of the <select> menu.
-
-show="" - a pipe-delimited list of values to show, if you don't want all of the default values to display. (i.e. show="CA|NY|OH|MI")
-
-null_divider="false" - whether or not to include a divider option with a null value. Defaults to "true". 
-
-<?php
-$buffer = ob_get_contents();
 	
-ob_end_clean(); 
-
-return $buffer;
-}
-
+	function usage()
+	{
+		ob_start(); 
+	?>
+	
+		REEgion Select will display a dropdown <select> list of:
+		
+		- countries (based on the ISO 3166-1 list of countries, dependent territories, and special areas of geographical interest)
+		- US states (based on the USPS official list of US states and possessions)
+		- Canadian provinces and territories
+		- UK counties
+		- Canadian provinces and US states together
+		
+		Use the following EE tags to generate each type of dropdown:
+		
+		{exp:reegion_select:countries}
+		
+		{exp:reegion_select:states}
+		
+		{exp:reegion_select:provinces}
+		
+		{exp:reegion_select:ukcounties}
+		
+		{exp:reegion_select:provinces_states}
+		
+		REEgion Select accepts five optional parameters:
+		
+		name="" - value for the "name" attribute of the <select> menu. Defaults: "country", "state", "province", "county", "province_state".
+		
+		type="" - "alpha2" will use use the ISO 3166-2 abbreviation as the <option> value for countries, states, and provinces. "alpha3" will use use the ISO 3166-1 abbreviation as the <option> value for countries. "name" will use the region name as the value. Default: "name".
+		
+		id="" - value for the "id" attribute of the <select> menu.
+		
+		class="" - value for the "class" attribute of the <select> menu.
+		
+		tabindex="" - value for the "tabindex" attribute of the <select> menu.
+		
+		selected="" - value of the <option> element that should be selected by default.
+		
+		show="" - a pipe-delimited list of values to show, if you don't want all of the default values to display. (e.g., show="CA|NY|OH|MI")
+		
+		hide="" - a pipe-delimited list of values to hide, if you don't want all of the default values to display. (e.g., hide="Canada|United States|Mexico")
+		
+		null_divider="false" - whether or not to include a divider option with a null value. Defaults to "true". 
+		
+	<?php
+		$buffer = ob_get_contents();
+		ob_end_clean(); 
+		return $buffer;
+	}
 
 }
 ?>

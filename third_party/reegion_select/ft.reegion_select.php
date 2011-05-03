@@ -23,7 +23,7 @@ class Reegion_select_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'REEgion Select',
-		'version'	=> '2.0.1'
+		'version'	=> '2.0.2'
 	);
  
  			
@@ -38,7 +38,7 @@ class Reegion_select_ft extends EE_Fieldtype {
 	{
 		$types = $this->get_types();
 		$this->EE->table->add_row(
-			$this->EE->lang->line('region_type', 'region_type'),
+			$this->EE->lang->line('rs_region_type', 'region_type'),
 			form_dropdown('region_type', $types, (isset($settings['region_type'])) ? $settings['region_type'] : '', 'id="region_type"')
 		);
 
@@ -49,7 +49,7 @@ class Reegion_select_ft extends EE_Fieldtype {
 	{
 		$types = $this->get_types();
 		return array(
-		    array($this->EE->lang->line('region_type', 'region_type'),
+		    array($this->EE->lang->line('rs_region_type', 'region_type'),
 		    form_dropdown('region_type', $types, (isset($settings['region_type'])) ? $settings['region_type'] : ''))
 		  );
 		
@@ -59,11 +59,11 @@ class Reegion_select_ft extends EE_Fieldtype {
 	function get_types()
 	{		
 		return array(
-			'countries' => $this->EE->lang->line('countries'),
-			'states' => $this->EE->lang->line('states'),
-			'provinces' => $this->EE->lang->line('provinces'),
-			'provinces_states' => $this->EE->lang->line('provinces_states'),
-			'ukcounties' => $this->EE->lang->line('ukcounties')
+			'countries' => $this->EE->lang->line('rs_countries'),
+			'states' => $this->EE->lang->line('rs_states'),
+			'provinces' => $this->EE->lang->line('rs_provinces'),
+			'provinces_states' => $this->EE->lang->line('rs_provinces_states'),
+			'ukcounties' => $this->EE->lang->line('rs_ukcounties')
 		);
 	}
 	
@@ -106,7 +106,9 @@ class Reegion_select_ft extends EE_Fieldtype {
 				$regions = $provinces;
 				break;
 		 	case 'provinces_states':
-				$regions = array_merge($provinces, $states);
+				$regions = array();
+				$regions[$this->EE->lang->line('rs_provinces')] = $provinces;
+				$regions[$this->EE->lang->line('rs_states')] = $states;
 				break;
 			case 'ukcounties':
 				// Counties array has no keys,
@@ -170,6 +172,32 @@ class Reegion_select_ft extends EE_Fieldtype {
 			$data = $countries_alpha3[$data];
 		}
 		return $data;
+	}
+	
+	
+	function low_search_index($data)
+	{
+		// Make both codes and names searchable
+		$r = $data;
+		include PATH_THIRD.'reegion_select/libraries/regions.php';
+		switch($this->settings['region_type'])
+		{
+			case 'countries':
+				$r .= ' ' . $countries_alpha3[$data];
+				$r .= ' ' . $countries[$data];
+				break;
+			case 'states':
+				$r .= ' ' . $states[$data];
+				break;
+			case 'provinces':
+				$r .= ' ' . $provinces[$data];
+				break;
+		 	case 'provinces_states':
+				$regions = array_merge($provinces, $states);
+				$r .= ' ' . $regions[$data];
+				break;
+		}
+		return $r;
 	}
 
 }
