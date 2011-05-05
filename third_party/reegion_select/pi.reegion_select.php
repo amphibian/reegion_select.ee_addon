@@ -21,7 +21,7 @@
 
 $plugin_info = array(
 	'pi_name'			=> 'REEgion Select',
-	'pi_version'		=> '2.0.2',
+	'pi_version'		=> '2.0.3',
 	'pi_author'			=> 'Derek Hogue',
 	'pi_author_url'		=> 'http://github.com/amphibian/reegion_select.ee2_addon',
 	'pi_description'	=> 'Displays a drop down select menu of countries, US states, Canadian provinces, or UK counties.',
@@ -40,6 +40,8 @@ class Reegion_select {
 		$this->EE->load->helper('form');
 		$this->EE->lang->loadfile('reegion_select');		
 	}
+	
+	
 	/**
 	 * Display the dropdown menu.
 	 *
@@ -47,7 +49,6 @@ class Reegion_select {
 	 *
 	 * @param string $list Name of the data array to use when building the <select> menu.
 	 * @param string $name The default string for the "name" attribute on the <select> menu (in the case that one is not supplied).
-	 * @param string $label Text to be appended to the phrase "Select a" as the first option of the <select> menu.
 	 */
 	
 	function dropdown_builder($list, $name)
@@ -55,7 +56,7 @@ class Reegion_select {
 		include PATH_THIRD.'reegion_select/libraries/regions.php';
 		
 		$type = $this->EE->TMPL->fetch_param('type', 'name');
-		$name = $this->EE->TMPL->fetch_param('name', $name);
+		$select_name = $this->EE->TMPL->fetch_param('name', $name);
 		$id = $this->EE->TMPL->fetch_param('id', FALSE);
 		$class = $this->EE->TMPL->fetch_param('class', 'reegion_select');
 		$tabindex = $this->EE->TMPL->fetch_param('tabindex', FALSE);
@@ -103,28 +104,51 @@ class Reegion_select {
 			
 		foreach($regions as $k => $label)
 		{
-			$val = $label;
-			switch($type) {
-				case 'alpha2':
-					if(!is_numeric($k))
-					{
-						$val = $k;
-					}
-					break;
-				case 'alpha3':
-					if(!is_numeric($k) && $list == 'countries')
-					{
-						$val = $countries_alpha3[$k];
-					}
-					break;
-			}
-			if(($show == FALSE || in_array($val, explode('|', $show))) && ($hide == FALSE || !in_array($val, explode('|', $hide))))
+			if(is_array($label))
 			{
-				$options[$val] = $label;
+				// States and provinces are different
+				// (multidimensional array so we get optgroups)
+				foreach($label as $sp_k => $sp_label)
+				{
+					$val = ($type == 'alpha2') ? $sp_k : $sp_label;
+					if(
+						($show == FALSE || in_array($val, explode('|', $show))) && 
+						($hide == FALSE || !in_array($val, explode('|', $hide)))
+					)
+					{
+						$options[$k][$val] = $sp_label;
+					}					
+				}
+			}	
+			else
+			{
+				$val = $label;
+				switch($type)
+				{
+					case 'alpha2':
+						if(!is_numeric($k))
+						{
+							$val = $k;
+						}
+						break;
+					case 'alpha3':
+						if(!is_numeric($k) && $list == 'countries')
+						{
+							$val = $countries_alpha3[$k];
+						}
+						break;
+				}
+				if(
+					($show == FALSE || in_array($val, explode('|', $show))) && 
+					($hide == FALSE || !in_array($val, explode('|', $hide)))
+				)
+				{
+					$options[$val] = $label;
+				}
 			}
 		}
 		
-		return form_dropdown($name, $options, $selected, $extra);
+		return form_dropdown($select_name, $options, $selected, $extra);
 	}
 
 
