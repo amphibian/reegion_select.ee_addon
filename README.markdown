@@ -10,11 +10,11 @@ REEgion Select is an EE2 plugin and fieldtype that displays a list of:
 
 To use the fieldtype, simply install and then choose REEgion Select from the fieldtype menu when creating a new custom field (or Matrix field), then choose which kind of regions you'd like to display.
 
-In your templates, display your custom field using `{field_name:name}` ((or simply `{field_name}`) to display the name of the region (i.e., United States); `{field_name:alpha2}` to display the ISO 3166-2 code for the country, state, or province (i.e., US); or use `{field_name:alpha3}` to display the ISO 3166-1 code for the country (i.e., USA).
+In your templates, display your custom field using `{field_name:name}` (or simply `{field_name}`) to display the name of the region (i.e., United States); `{field_name:alpha2}` to display the ISO 3166-2 code for the country, state, or province (i.e., US); or use `{field_name:alpha3}` to display the ISO 3166-1 code for the country (i.e., USA).
 
 ##Plugin Usage
 
-Use the following EE tags to generate each type of dropdown <select> menu in your templates:
+Use the following EE tags to generate each type of dropdown `<select>` menu in your templates:
 
 `{exp:reegion_select:countries}`
 
@@ -46,18 +46,18 @@ REEgion Select accepts ten optional parameters:
 
 - `show=""` -- A pipe-delimited list of values to show, if you don't want all of the default values to display. (e.g., `show="CA|NY|OH|MI"`)
 - `hide=""` -- A pipe-delimited list of values to hide, if you don't want all of the default values to display. (e.g., `hide="Canada|United States|Mexico"`)
-- `name=""` -- Value for the "name" attribute of the <select> menu. Defaults: "country", "state", "province", "county", "province_state".
+- `name=""` -- Value for the "name" attribute of the `<select>` menu. Defaults: "country", "state", "province", "county", "province_state".
 - `type=""` -- `alpha2` will use use the ISO 3166-2 abbreviation as the <option> value for countries, states, and provinces. `alpha3` will use use the ISO 3166-1 abbreviation as the <option> value for countries. "name" will use the region name as the value. Default: `name`.
 - `selected=""` -- Value of the <option> element that should be selected by default.
-- `title=""` -- A title or heading for the <select> menu. Defaults to "Select a (Country/State/Province/etc)".
-- `id=""` -- Value for the `id` attribute of the <select> menu.
-- `class=""` -- Value for the `class` attribute of the <select> menu. Defaults to `reegion_select`.
-- `tabindex=""` -- Value for the `tabindex` attribute of the <select> menu.
+- `title=""` -- A title or heading for the `<select>` menu. Defaults to "Select a (Country/State/Province/etc)".
+- `id=""` -- Value for the `id` attribute of the `<select>` menu.
+- `class=""` -- Value for the `class` attribute of the `<select>` menu. Defaults to `reegion_select`.
+- `tabindex=""` -- Value for the `tabindex` attribute of the `<select>` menu.
 - `null_divider="n"` -- Whether or not to include a divider option with a null value at the top of the menu. Defaults to `y`.
 
 ## Low Variables Usage
 
-REEgion Select can also be used as a var type in the [Low Variables](http://devot-ee.com/add-ons/low-variables/) module. THe resulting global variables will output the ISO 3166-2 abbreviation value for your region, but you can access the "name" or "alpha3" values by using the `{exp:low_variables:parse}` tag:
+REEgion Select can also be used as a var type in the [Low Variables](http://devot-ee.com/add-ons/low-variables/) module. The resulting global variables will output the ISO 3166-2 abbreviation value for your region, but you can access the "name" or "alpha3" values by using the `{exp:low_variables:parse}` tag:
 
 `{exp:low_variables:parse var="var_name" type="name"}`
 
