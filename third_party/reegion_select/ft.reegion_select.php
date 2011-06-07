@@ -23,20 +23,20 @@ class Reegion_select_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'REEgion Select',
-		'version'	=> '2.0.3'
+		'version'	=> '2.0.4'
 	);
  
  			
 	function Reegion_select_ft()
 	{
 		parent::EE_Fieldtype();
-		$this->EE->lang->loadfile('reegion_select');		
+		$this->EE->lang->loadfile('reegion_select');
 	}
 		
 	
 	function display_settings($settings)
 	{
-		$types = $this->get_types();
+		$types = $this->_get_types();
 		$this->EE->table->add_row(
 			$this->EE->lang->line('rs_region_type', 'region_type'),
 			form_dropdown('region_type', $types, (isset($settings['region_type'])) ? $settings['region_type'] : '', 'id="region_type"')
@@ -45,9 +45,10 @@ class Reegion_select_ft extends EE_Fieldtype {
 	}
 	
 	
+	// Matrix support
 	function display_cell_settings($settings)
 	{
-		$types = $this->get_types();
+		$types = $this->_get_types();
 		return array(
 		    array($this->EE->lang->line('rs_region_type', 'region_type'),
 		    form_dropdown('region_type', $types, (isset($settings['region_type'])) ? $settings['region_type'] : ''))
@@ -56,13 +57,21 @@ class Reegion_select_ft extends EE_Fieldtype {
 	}
 	
 	
-	function get_types()
+	// Low Variables support
+	function display_var_settings($settings)
+	{
+		return $this->display_cell_settings($settings);
+	}
+	
+	
+	function _get_types()
 	{		
 		return array(
 			'countries' => $this->EE->lang->line('rs_countries'),
 			'states' => $this->EE->lang->line('rs_states'),
 			'provinces' => $this->EE->lang->line('rs_provinces'),
 			'provinces_states' => $this->EE->lang->line('rs_provinces_states'),
+			'states_provinces' => $this->EE->lang->line('rs_states_provinces'),
 			'ukcounties' => $this->EE->lang->line('rs_ukcounties')
 		);
 	}
@@ -74,23 +83,38 @@ class Reegion_select_ft extends EE_Fieldtype {
 			'region_type' => $this->EE->input->post('region_type')
 		);
 	}
+	
+	
+	// Low Variables support
+	function save_var_settings($data)
+	{
+		return $this->save_settings($data);
+	}
 
 
 	function display_field($data)
 	{
 
-		return $this->display($data, $this->field_name);
+		return $this->_display($data, $this->field_name);
 	}
 	
 	
+	// Matrix support
 	function display_cell($data)
 	{
 
-		return $this->display($data, $this->cell_name);
-	}	
+		return $this->_display($data, $this->cell_name);
+	}
 	
 	
-	function display($data, $name)
+	// Low Variables support
+	function display_var_field($data)
+	{
+		return $this->_display($data, $this->field_name);
+	}
+	
+	
+	function _display($data, $name)
 	{
 		include PATH_THIRD.'reegion_select/libraries/regions.php';
 
@@ -109,6 +133,11 @@ class Reegion_select_ft extends EE_Fieldtype {
 				$regions = array();
 				$regions[$this->EE->lang->line('rs_provinces')] = $provinces;
 				$regions[$this->EE->lang->line('rs_states')] = $states;
+				break;
+		 	case 'states_provinces':
+				$regions = array();
+				$regions[$this->EE->lang->line('rs_states')] = $states;
+				$regions[$this->EE->lang->line('rs_provinces')] = $provinces;
 				break;
 			case 'ukcounties':
 				// Counties array has no keys,
@@ -131,10 +160,12 @@ class Reegion_select_ft extends EE_Fieldtype {
 	}
 	
 	
-	function replace_name($data, $params = array(), $tagdata = FALSE)
+	function replace_name($data, $params = array(), $tagdata = FALSE, $lv_settings = array())
 	{
 		include PATH_THIRD.'reegion_select/libraries/regions.php';
-		switch($this->settings['region_type'])
+		$settings = (!empty($lv_settings)) ? $lv_settings : $this->settings;
+		
+		switch($settings['region_type'])
 		{
 			case 'countries':
 				return $countries[$data];
@@ -145,7 +176,7 @@ class Reegion_select_ft extends EE_Fieldtype {
 			case 'provinces':
 				return $provinces[$data];
 				break;
-		 	case 'provinces_states':
+		 	case 'provinces_states': case 'states_provinces':
 				$regions = array_merge($provinces, $states);
 				return $regions[$data];
 				break;
@@ -163,10 +194,11 @@ class Reegion_select_ft extends EE_Fieldtype {
 	}
 
 
-	function replace_alpha3($data, $params = array(), $tagdata = FALSE)
+	function replace_alpha3($data, $params = array(), $tagdata = FALSE, $lv_settings = array())
 	{
 		// Applies to Countries only
-		if($this->settings['region_type'] == 'countries')
+		$settings = (!empty($lv_settings)) ? $lv_settings : $this->settings;
+		if($settings['region_type'] == 'countries')
 		{
 			include PATH_THIRD.'reegion_select/libraries/regions.php';
 			$data = $countries_alpha3[$data];
@@ -174,7 +206,32 @@ class Reegion_select_ft extends EE_Fieldtype {
 		return $data;
 	}
 	
+
+	// Low Variables support
+	function display_var_tag($data, $params = array(), $tagdata = FALSE)
+	{
+		if(isset($params['type']))
+		{
+			switch($params['type'])
+			{
+				case 'alpha2' :
+					return $data;
+					break;
+				case 'alpha3':	
+					return $this->replace_alpha3($data, null, null, $params);
+					break;
+				default :
+					return $this->replace_name($data, null, null, $params);
+			}		
+		}
+		else
+		{
+			return $this->replace_name($data, null, null, $params);
+		}
+	}	
 	
+	
+	// Low Search support
 	function low_search_index($data)
 	{
 		// Make both codes and names searchable

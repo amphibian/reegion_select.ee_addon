@@ -21,7 +21,7 @@
 
 $plugin_info = array(
 	'pi_name'			=> 'REEgion Select',
-	'pi_version'		=> '2.0.3',
+	'pi_version'		=> '2.0.4',
 	'pi_author'			=> 'Derek Hogue',
 	'pi_author_url'		=> 'http://github.com/amphibian/reegion_select.ee2_addon',
 	'pi_description'	=> 'Displays a drop down select menu of countries, US states, Canadian provinces, or UK counties.',
@@ -45,41 +45,49 @@ class Reegion_select {
 	/**
 	 * Display the dropdown menu.
 	 *
-	 * Displays a <select> menu of countries, provinces, states or counties.
+	 * Displays a list of countries, provinces, states or counties, in either a dropdown list or custom template.
 	 *
-	 * @param string $list Name of the data array to use when building the <select> menu.
+	 * @param string $list Name of the data array to use when building the list.
 	 * @param string $name The default string for the "name" attribute on the <select> menu (in the case that one is not supplied).
 	 */
 	
-	function dropdown_builder($list, $name)
-	{
+	function _display($list, $name)
+	{		
 		include PATH_THIRD.'reegion_select/libraries/regions.php';
 		
-		$type = $this->EE->TMPL->fetch_param('type', 'name');
-		$select_name = $this->EE->TMPL->fetch_param('name', $name);
-		$id = $this->EE->TMPL->fetch_param('id', FALSE);
-		$class = $this->EE->TMPL->fetch_param('class', 'reegion_select');
-		$tabindex = $this->EE->TMPL->fetch_param('tabindex', FALSE);
-		$selected = $this->EE->TMPL->fetch_param('selected', '');
+		$style = (empty($this->EE->TMPL->tagdata)) ? 'dropdown' : 'linear';
 		$show = $this->EE->TMPL->fetch_param('show', FALSE);
 		$hide = $this->EE->TMPL->fetch_param('hide', FALSE);
 		$title = $this->EE->TMPL->fetch_param('title', $this->EE->lang->line('rs_select').' '.$this->EE->lang->line('rs_'.$name));
-		$null_divider = $this->EE->TMPL->fetch_param('null_divider', 'y');
-		
-		$extra = 'class="'.trim($class).'"';
-		if($id)
-		{
-			$extra .= ' id="'.trim($id).'"';
-		}
-		if($tabindex)
-		{
-			$extra .= ' tabindex="'.intval($tabindex).'"';
-		}
 
+		$vars = array();
+		$i = 0;
 		$options = array('' => $title);
-		if($null_divider == 'y')
+				
+		if($style == 'dropdown')
 		{
-			$options[] = '--------------------';
+			$type = $this->EE->TMPL->fetch_param('type', 'name');
+			$select_name = $this->EE->TMPL->fetch_param('name', $name);
+			$id = $this->EE->TMPL->fetch_param('id', FALSE);
+			$class = $this->EE->TMPL->fetch_param('class', 'reegion_select');
+			$tabindex = $this->EE->TMPL->fetch_param('tabindex', FALSE);
+			$selected = $this->EE->TMPL->fetch_param('selected', '');
+			$null_divider = $this->EE->TMPL->fetch_param('null_divider', 'y');
+			
+			$extra = 'class="'.trim($class).'"';
+			if($id)
+			{
+				$extra .= ' id="'.trim($id).'"';
+			}
+			if($tabindex)
+			{
+				$extra .= ' tabindex="'.intval($tabindex).'"';
+			}
+			if($null_divider == 'y')
+			{
+				$options[] = '--------------------';
+			}		
+		
 		}
 				
 		switch($list)
@@ -97,6 +105,10 @@ class Reegion_select {
 				$regions[$this->EE->lang->line('rs_provinces')] = $provinces;
 				$regions[$this->EE->lang->line('rs_states')] = $states;
 				break;
+		 	case 'states_provinces':
+				$regions[$this->EE->lang->line('rs_states')] = $states;
+				$regions[$this->EE->lang->line('rs_provinces')] = $provinces;
+				break;
 			case 'ukcounties' :
 				$regions = $ukcounties;
 				break;				
@@ -110,76 +122,100 @@ class Reegion_select {
 				// (multidimensional array so we get optgroups)
 				foreach($label as $sp_k => $sp_label)
 				{
-					$val = ($type == 'alpha2') ? $sp_k : $sp_label;
+					$val = ($type == 'alpha2' || $style == 'linear') ? $sp_k : $sp_label;
 					if(
 						($show == FALSE || in_array($val, explode('|', $show))) && 
 						($hide == FALSE || !in_array($val, explode('|', $hide)))
 					)
 					{
 						$options[$k][$val] = $sp_label;
+						$vars[$i]['region_name'] = $sp_label;
+						$vars[$i]['region_alpha2'] = $sp_k;
+						$vars[$i]['region_alpha3'] = '';
+						$i++;
 					}					
 				}
 			}	
 			else
 			{
-				$val = $label;
-				switch($type)
+				if($style == 'dropdown')
 				{
-					case 'alpha2':
-						if(!is_numeric($k))
-						{
-							$val = $k;
-						}
-						break;
-					case 'alpha3':
-						if(!is_numeric($k) && $list == 'countries')
-						{
-							$val = $countries_alpha3[$k];
-						}
-						break;
+					$val = $label;
+					switch($type)
+					{
+						case 'alpha2':
+							if(!is_numeric($k))
+							{
+								$val = $k;
+							}
+							break;
+						case 'alpha3':
+							if(!is_numeric($k) && $list == 'countries')
+							{
+								$val = $countries_alpha3[$k];
+							}
+							break;
+					}
 				}
+				else
+				{
+					$val = $k;
+				}
+				
 				if(
 					($show == FALSE || in_array($val, explode('|', $show))) && 
 					($hide == FALSE || !in_array($val, explode('|', $hide)))
 				)
 				{
 					$options[$val] = $label;
+					$vars[$i]['region_name'] = $label;
+					$vars[$i]['region_alpha2'] = ($list == 'ukcounties') ? '' : $k;
+					$vars[$i]['region_alpha3'] = ($list == 'countries') ? $countries_alpha3[$k] : '';
+					$i++;
 				}
 			}
 		}
-		
-		return form_dropdown($select_name, $options, $selected, $extra);
+				
+		return ($style == 'dropdown') ? 
+			form_dropdown($select_name, $options, $selected, $extra) : 
+			$this->EE->TMPL->parse_variables($this->EE->TMPL->tagdata, $vars);
 	}
 
 
 	function countries()
 	{
-		return $this->dropdown_builder('countries','country');
+		return $this->_display('countries','country');
 	}
 
 	
 	function states()
 	{
-		return $this->dropdown_builder('states','state');		
+		return $this->_display('states','state');		
 	}
 
 	
 	function provinces()
 	{
-		return $this->dropdown_builder('provinces','province');
+		return $this->_display('provinces','province');
 	}
 	
 	
 	function ukcounties()
 	{
-		return $this->dropdown_builder('ukcounties','county');	
+		return $this->_display('ukcounties','county');	
 	}
 	
 	
 	function provinces_states()
 	{
-		return $this->dropdown_builder('provinces_states','province_state');
+		return $this->_display('provinces_states','province_state');
 	}
+
+
+	function states_provinces()
+	{
+		return $this->_display('states_provinces','state_province');
+	}	
 	
 	
 	function usage()
@@ -187,7 +223,7 @@ class Reegion_select {
 		ob_start(); 
 	?>
 	
-		REEgion Select will display a dropdown <select> list of:
+		REEgion Select will display a list of:
 		
 		- countries (based on the ISO 3166-1 list of countries, dependent territories, and special areas of geographical interest)
 		- US states (based on the USPS official list of US states and possessions)
@@ -195,7 +231,8 @@ class Reegion_select {
 		- UK counties
 		- Canadian provinces and US states together
 		
-		Use the following EE tags to generate each type of dropdown:
+		
+		Use the following EE tags to generate each type of list as a dropdown:
 		
 		{exp:reegion_select:countries}
 		
@@ -207,8 +244,26 @@ class Reegion_select {
 		
 		{exp:reegion_select:provinces_states}
 		
-		REEgion Select accepts ten optional parameters:
 		
+		Or, use a tag pair to customize the display of regions with your own markup:
+		
+		{exp:reegion_select:countries}
+			{region_name}
+			{region_alpha2}
+			{region_alpha3}
+		{/exp:reegion_select:countries}
+		
+		(And likewise for the other region types.)
+		
+		You can also use the {count} and {total_results} variables within the tag pair.
+		
+		
+		REEgion Select accepts ten optional parameters:
+				
+		show="" - a pipe-delimited list of values to show, if you don't want all of the default values to display. (e.g., show="CA|NY|OH|MI")
+		
+		hide="" - a pipe-delimited list of values to hide, if you don't want all of the default values to display. (e.g., hide="Canada|United States|Mexico")
+				
 		name="" - value for the "name" attribute of the <select> menu. Defaults: "country", "state", "province", "county", "province_state".
 		
 		type="" - "alpha2" will use use the ISO 3166-2 abbreviation as the <option> value for countries, states, and provinces. "alpha3" will use use the ISO 3166-1 abbreviation as the <option> value for countries. "name" will use the region name as the value. Default: "name".
@@ -222,10 +277,6 @@ class Reegion_select {
 		tabindex="" - value for the "tabindex" attribute of the <select> menu.
 		
 		selected="" - value of the <option> element that should be selected by default.
-		
-		show="" - a pipe-delimited list of values to show, if you don't want all of the default values to display. (e.g., show="CA|NY|OH|MI")
-		
-		hide="" - a pipe-delimited list of values to hide, if you don't want all of the default values to display. (e.g., hide="Canada|United States|Mexico")
 		
 		null_divider="false" - whether or not to include a divider option with a null value. Defaults to "true". 
 		
