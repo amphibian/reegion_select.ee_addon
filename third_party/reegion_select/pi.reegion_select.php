@@ -21,7 +21,7 @@
 
 $plugin_info = array(
 	'pi_name'			=> 'REEgion Select',
-	'pi_version'		=> '2.0.4',
+	'pi_version'		=> '2.0.5',
 	'pi_author'			=> 'Derek Hogue',
 	'pi_author_url'		=> 'http://github.com/amphibian/reegion_select.ee2_addon',
 	'pi_description'	=> 'Displays a drop down select menu of countries, US states, Canadian provinces, or UK counties.',
@@ -122,7 +122,7 @@ class Reegion_select {
 				// (multidimensional array so we get optgroups)
 				foreach($label as $sp_k => $sp_label)
 				{
-					$val = ($type == 'alpha2' || $style == 'linear') ? $sp_k : $sp_label;
+					$val = ((isset($type) && $type == 'alpha2') || $style == 'linear') ? $sp_k : $sp_label;
 					if(
 						($show == FALSE || in_array($val, explode('|', $show))) && 
 						($hide == FALSE || !in_array($val, explode('|', $hide)))
