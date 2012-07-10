@@ -23,7 +23,7 @@ class Reegion_select_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'REEgion Select',
-		'version'	=> '2.0.4'
+		'version'	=> '2.0.6'
 	);
  
  			
