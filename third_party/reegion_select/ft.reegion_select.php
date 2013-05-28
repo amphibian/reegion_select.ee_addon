@@ -23,7 +23,7 @@ class Reegion_select_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'REEgion Select',
-		'version'	=> '2.0.6'
+		'version'	=> '2.0.7'
 	);
  
  			
@@ -162,10 +162,8 @@ class Reegion_select_ft extends EE_Fieldtype {
 	
 	function replace_name($data, $params = array(), $tagdata = FALSE, $lv_settings = array())
 	{
-		include PATH_THIRD.'reegion_select/libraries/regions.php';
-		$settings = (!empty($lv_settings)) ? $lv_settings : $this->settings;
-		
-		switch($settings['region_type'])
+		include PATH_THIRD.'reegion_select/libraries/regions.php';		
+		switch($this->settings['region_type'])
 		{
 			case 'countries':
 				return $countries[$data];
@@ -197,8 +195,7 @@ class Reegion_select_ft extends EE_Fieldtype {
 	function replace_alpha3($data, $params = array(), $tagdata = FALSE, $lv_settings = array())
 	{
 		// Applies to Countries only
-		$settings = (!empty($lv_settings)) ? $lv_settings : $this->settings;
-		if($settings['region_type'] == 'countries')
+		if($this->settings['region_type'] == 'countries')
 		{
 			include PATH_THIRD.'reegion_select/libraries/regions.php';
 			$data = $countries_alpha3[$data];
