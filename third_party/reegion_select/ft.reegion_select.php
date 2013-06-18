@@ -27,9 +27,9 @@ class Reegion_select_ft extends EE_Fieldtype {
 	);
  
  			
-	function Reegion_select_ft()
+	function __construct()
 	{
-		parent::EE_Fieldtype();
+		EE_Fieldtype::__construct();
 		$this->EE->lang->loadfile('reegion_select');
 	}
 		
@@ -229,7 +229,7 @@ class Reegion_select_ft extends EE_Fieldtype {
 	
 	
 	// Low Search support
-	function low_search_index($data)
+	function third_party_search_index($data)
 	{
 		// Make both codes and names searchable
 		$r = $data;
