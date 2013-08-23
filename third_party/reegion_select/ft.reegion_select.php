@@ -23,7 +23,7 @@ class Reegion_select_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'REEgion Select',
-		'version'	=> '2.0.7'
+		'version'	=> '2.0.8'
 	);
  
  			
@@ -33,7 +33,12 @@ class Reegion_select_ft extends EE_Fieldtype {
 		$this->EE->lang->loadfile('reegion_select');
 	}
 		
-	
+
+	function accepts_content_type($name)
+	{
+		return ($name == 'channel' || $name == 'grid');
+	}
+		
 	function display_settings($settings)
 	{
 		$types = $this->_get_types();
@@ -55,6 +60,20 @@ class Reegion_select_ft extends EE_Fieldtype {
 		  );
 		
 	}
+	
+
+	function grid_display_settings($settings)
+	{
+		$types = $this->_get_types();
+		return array(
+			$this->grid_dropdown_row(
+				$this->EE->lang->line('rs_region_type'),
+				'region_type',
+				$types,
+				(isset($settings['region_type'])) ? $settings['region_type'] : ''
+			)
+		);
+	}	
 	
 	
 	// Low Variables support
@@ -84,6 +103,11 @@ class Reegion_select_ft extends EE_Fieldtype {
 		);
 	}
 	
+	
+	function grid_save_settings($data)
+	{
+		return $data;
+	}	
 	
 	// Low Variables support
 	function save_var_settings($data)

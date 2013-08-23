@@ -21,7 +21,7 @@
 
 $plugin_info = array(
 	'pi_name'			=> 'REEgion Select',
-	'pi_version'		=> '2.0.7',
+	'pi_version'		=> '2.0.8',
 	'pi_author'			=> 'Derek Hogue',
 	'pi_author_url'		=> 'http://github.com/amphibian/reegion_select.ee2_addon',
 	'pi_description'	=> 'Displays a drop down select menu of countries, US states, Canadian provinces, or UK counties.',
