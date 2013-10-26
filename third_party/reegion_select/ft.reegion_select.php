@@ -23,7 +23,7 @@ class Reegion_select_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'REEgion Select',
-		'version'	=> '2.0.8'
+		'version'	=> '2.0.9'
 	);
  
  			
@@ -255,6 +255,11 @@ class Reegion_select_ft extends EE_Fieldtype {
 	// Low Search support
 	function third_party_search_index($data)
 	{
+		if(empty($data))
+		{
+			return $data;
+		}
+		
 		// Make both codes and names searchable
 		$r = $data;
 		include PATH_THIRD.'reegion_select/libraries/regions.php';
