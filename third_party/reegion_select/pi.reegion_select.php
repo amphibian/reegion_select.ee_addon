@@ -21,7 +21,7 @@
 
 $plugin_info = array(
 	'pi_name'			=> 'REEgion Select',
-	'pi_version'		=> '2.0.9',
+	'pi_version'		=> '2.1',
 	'pi_author'			=> 'Derek Hogue',
 	'pi_author_url'		=> 'http://github.com/amphibian/reegion_select.ee2_addon',
 	'pi_description'	=> 'Displays a drop down select menu of countries, US states, Canadian provinces, or UK counties.',
@@ -71,6 +71,7 @@ class Reegion_select {
 			$id = $this->EE->TMPL->fetch_param('id', FALSE);
 			$class = $this->EE->TMPL->fetch_param('class', 'reegion_select');
 			$tabindex = $this->EE->TMPL->fetch_param('tabindex', FALSE);
+			$required = $this->EE->TMPL->fetch_param('required', FALSE);
 			$selected = $this->EE->TMPL->fetch_param('selected', '');
 			$null_divider = $this->EE->TMPL->fetch_param('null_divider', 'y');
 			
@@ -83,6 +84,20 @@ class Reegion_select {
 			{
 				$extra .= ' tabindex="'.intval($tabindex).'"';
 			}
+			if($required)
+			{
+				$extra .= ' required="required"';
+			}
+			
+			// Check for data- params
+			foreach($this->EE->TMPL->tagparams as $param => $value)
+			{
+				if(substr($param, 0, 5) == 'data-')
+				{
+					$extra .= ' '.$param.'="'.$value.'"';
+				}
+			}
+						
 			if($null_divider == 'y')
 			{
 				$options[] = '--------------------';
@@ -275,6 +290,10 @@ class Reegion_select {
 		class="" - value for the "class" attribute of the <select> menu.
 		
 		tabindex="" - value for the "tabindex" attribute of the <select> menu.
+
+		required="" - whether to add the HTML5 "required" attribute to the <select> menu.
+
+		data-[value]="" - any "data-" values passed as individual parameters will be added verbatim to the <select> menu.
 		
 		selected="" - value of the <option> element that should be selected by default.
 		
