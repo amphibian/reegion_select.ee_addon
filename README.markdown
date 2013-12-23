@@ -53,6 +53,8 @@ REEgion Select accepts ten optional parameters:
 - `id=""` -- Value for the `id` attribute of the `<select>` menu.
 - `class=""` -- Value for the `class` attribute of the `<select>` menu. Defaults to `reegion_select`.
 - `tabindex=""` -- Value for the `tabindex` attribute of the `<select>` menu.
+- `required=""` -- whether to add the HTML5 "required" attribute to the `<select>` menu.
+- `data-[value]=""` -- any "data-" values passed as individual parameters will be added verbatim to the `<select>` menu.
 - `null_divider="n"` -- Whether or not to include a divider option with a null value at the top of the menu. Defaults to `y`.
 
 ## Low Variables Usage
