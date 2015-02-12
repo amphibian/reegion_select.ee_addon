@@ -275,7 +275,8 @@ class Reegion_select_ft extends EE_Fieldtype {
 			case 'provinces':
 				$r .= ' ' . $provinces[$data];
 				break;
-		 	case 'provinces_states':
+			case 'provinces_states':
+			case 'states_provinces':
 				$regions = array_merge($provinces, $states);
 				$r .= ' ' . $regions[$data];
 				break;
