@@ -2,6 +2,7 @@
 
 $lang = array(
 	'rs_region_type' => 'Region Type',
+	'rs_multiselect' => 'Allow multiple selections?',
 	'rs_countries' => 'Countries',
 	'rs_states' => 'U.S. States',
 	'rs_provinces' => 'Canadian Provinces',

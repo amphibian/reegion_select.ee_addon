@@ -23,13 +23,16 @@ class Reegion_select_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'REEgion Select',
-		'version'	=> '2.1'
+		'version'	=> '2.2'
 	);
- 
+	
+	public $has_array_data = TRUE;
+	public $regions = array();
+	public $countries_alpha3 = array();
  			
 	function __construct()
 	{
-		EE_Fieldtype::__construct();
+		$this->EE =& get_instance();
 		$this->EE->lang->loadfile('reegion_select');
 	}
 		
@@ -46,6 +49,10 @@ class Reegion_select_ft extends EE_Fieldtype {
 			$this->EE->lang->line('rs_region_type', 'region_type'),
 			form_dropdown('region_type', $types, (isset($settings['region_type'])) ? $settings['region_type'] : '', 'id="region_type"')
 		);
+		$this->EE->table->add_row(
+			$this->EE->lang->line('rs_multiselect', 'multiselect'),
+			form_label(form_checkbox('multiselect', 'y', (isset($settings['multiselect']) && $settings['multiselect'] == 'y') ? true : false).' '.lang('yes'))
+		);
 
 	}
 	
@@ -55,8 +62,14 @@ class Reegion_select_ft extends EE_Fieldtype {
 	{
 		$types = $this->_get_types();
 		return array(
-		    array($this->EE->lang->line('rs_region_type', 'region_type'),
-		    form_dropdown('region_type', $types, (isset($settings['region_type'])) ? $settings['region_type'] : ''))
+		    array(
+		    	$this->EE->lang->line('rs_region_type', 'region_type'),
+				form_dropdown('region_type', $types, (isset($settings['region_type'])) ? $settings['region_type'] : '')
+			),
+			array(
+				$this->EE->lang->line('rs_multiselect', 'multiselect'),
+				form_label(form_checkbox('multiselect', 'y', (isset($settings['multiselect']) && $settings['multiselect'] == 'y') ? true : false).' '.lang('yes'))
+			)
 		  );
 		
 	}
@@ -71,7 +84,13 @@ class Reegion_select_ft extends EE_Fieldtype {
 				'region_type',
 				$types,
 				(isset($settings['region_type'])) ? $settings['region_type'] : ''
-			)
+			),
+			$this->grid_checkbox_row(
+				$this->EE->lang->line('rs_multiselect'),
+				'multiselect',
+				'y',
+				(isset($settings['multiselect']) && $settings['multiselect'] == 'y') ? true : false
+			),
 		);
 	}	
 	
@@ -99,7 +118,8 @@ class Reegion_select_ft extends EE_Fieldtype {
 	function save_settings($data)
 	{
 		return array(
-			'region_type' => $this->EE->input->post('region_type')
+			'region_type' => $this->EE->input->post('region_type'),
+			'multiselect' => $this->EE->input->post('multiselect', 'n')
 		);
 	}
 	
@@ -113,6 +133,15 @@ class Reegion_select_ft extends EE_Fieldtype {
 	function save_var_settings($data)
 	{
 		return $this->save_settings($data);
+	}
+	
+	function save($data)
+	{
+		if(is_array($data))
+		{
+			$data = implode('|', $data);
+		}
+		return $data;
 	}
 
 
@@ -140,71 +169,61 @@ class Reegion_select_ft extends EE_Fieldtype {
 	
 	function _display($data, $name)
 	{
-		include PATH_THIRD.'reegion_select/libraries/regions.php';
-
-		switch($this->settings['region_type'])
+		$this->_fetch_regions();
+		
+		if(!empty($this->settings['multiselect']) && $this->settings['multiselect'] == 'y' && ! is_array($data))
 		{
-			case 'countries':
-				$regions = $countries;
-				break;
-			case 'states':
-				$regions = $states;
-				break;
-			case 'provinces':
-				$regions = $provinces;
-				break;
-		 	case 'provinces_states':
-				$regions = array();
-				$regions[$this->EE->lang->line('rs_provinces')] = $provinces;
-				$regions[$this->EE->lang->line('rs_states')] = $states;
-				break;
-		 	case 'states_provinces':
-				$regions = array();
-				$regions[$this->EE->lang->line('rs_states')] = $states;
-				$regions[$this->EE->lang->line('rs_provinces')] = $provinces;
-				break;
-			case 'ukcounties':
-				// Counties array has no keys,
-				// so we need to explicitly set them to match the values.
-				$regions = array();
-				foreach($ukcounties as $v)
-				{
-					$regions[$v] = $v;
-				}
-				break;				
+			$data = explode('|', $data);
 		}
 		
-		return form_dropdown($name, array_merge(array('' => '--'), $regions), $data);
+		$regions = array_merge(array('' => '--'), $this->regions);
+	
+		return (!empty($this->settings['multiselect']) && $this->settings['multiselect'] == 'y') ? 
+			form_multiselect($name.'[]', $regions, $data, 'size="10"') : 
+			form_dropdown($name, $regions, $data);
 	}
 	
 	
 	function replace_tag($data, $params = array(), $tagdata = FALSE)
 	{
-		return $this->replace_name($data);
+		if(!empty($tagdata) && !empty($data))
+		{
+			// We're outputting (potentially) multiple values
+			$this->_fetch_regions();
+			$exploded = explode('|', $data);
+			$array = array();
+			
+			foreach($exploded as $k => $region)
+			{
+				$array[$k] = array(
+					'region_name' => $this->regions[$region],
+					'region_alpha2' => $region
+				);
+				if($this->settings['region_type'] == 'countries')
+				{
+					$array[$k]['region_alpha3'] = $this->countries_alpha3[$region];
+				}
+			}
+			$r = ee()->TMPL->parse_variables($tagdata, $array);
+			if(!empty($params['backspace']))
+			{
+				$r = substr($r, 0, - $params['backspace']);
+			}
+			return $r;
+		}
+		else
+		{
+			return $this->replace_name($data);		
+		}
 	}
 	
 	
 	function replace_name($data, $params = array(), $tagdata = FALSE, $lv_settings = array())
 	{
-		include PATH_THIRD.'reegion_select/libraries/regions.php';		
-		switch($this->settings['region_type'])
+		if(!empty($data))
 		{
-			case 'countries':
-				return $countries[$data];
-				break;
-			case 'states':
-				return $states[$data];
-				break;
-			case 'provinces':
-				return $provinces[$data];
-				break;
-		 	case 'provinces_states': case 'states_provinces':
-				$regions = array_merge($provinces, $states);
-				return $regions[$data];
-				break;
-			case 'ukcounties' :
-				return $data;
-				break;				
+			$this->_fetch_regions();
+			return $this->regions[$data];
 		}
 	}
 	
@@ -218,13 +237,11 @@ class Reegion_select_ft extends EE_Fieldtype {
 
 	function replace_alpha3($data, $params = array(), $tagdata = FALSE, $lv_settings = array())
 	{
-		// Applies to Countries only
-		if($this->settings['region_type'] == 'countries')
+		if(!empty($data) && $this->settings['region_type'] == 'countries')
 		{
-			include PATH_THIRD.'reegion_select/libraries/regions.php';
-			$data = $countries_alpha3[$data];
+			$this->_fetch_regions();
+			return $this->countries_alpha3[$data];
 		}
-		return $data;
 	}
 	
 
@@ -261,27 +278,52 @@ class Reegion_select_ft extends EE_Fieldtype {
 		}
 		
 		// Make both codes and names searchable
-		$r = $data;
-		include PATH_THIRD.'reegion_select/libraries/regions.php';
+		$this->_fetch_regions();
+		$data = explode('|', $data);
+		$r = '';
+		foreach($data as $region)
+		{
+			$r .= $region.' '.$this->regions[$region];
+			if($this->settings['region_type'] == 'countries')
+			{
+				$r .= ' '.$this->countries_alpha3[$region];
+			}
+		}
+		return $r;
+	}
+	
+	function _fetch_regions()
+	{
+		include PATH_THIRD.'reegion_select/libraries/regions.php';		
 		switch($this->settings['region_type'])
 		{
 			case 'countries':
-				$r .= ' ' . $countries_alpha3[$data];
-				$r .= ' ' . $countries[$data];
+				$this->regions = $countries;
+				$this->countries_alpha3 = $countries_alpha3;
 				break;
 			case 'states':
-				$r .= ' ' . $states[$data];
+				$this->regions = $states;
 				break;
 			case 'provinces':
-				$r .= ' ' . $provinces[$data];
+				$this->regions = $provinces;
 				break;
-			case 'provinces_states':
-			case 'states_provinces':
-				$regions = array_merge($provinces, $states);
-				$r .= ' ' . $regions[$data];
+		 	case 'provinces_states':
+				$this->regions = array_merge($provinces, $states);
 				break;
+		 	case 'states_provinces':
+				$this->regions = array_merge($states, $provinces);
+				break;
+			case 'ukcounties':
+				// Counties array has no keys,
+				// so we need to explicitly set them to match the values.
+				$regions = array();
+				foreach($ukcounties as $v)
+				{
+					$regions[$v] = $v;
+				}
+				$this->regions = $regions;
+				break;				
 		}
-		return $r;
 	}
 
 }
