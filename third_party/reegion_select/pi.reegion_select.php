@@ -233,7 +233,7 @@ class Reegion_select {
 	}	
 	
 	
-	function usage()
+	static function usage()
 	{
 		ob_start(); 
 	?>
