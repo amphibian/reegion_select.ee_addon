@@ -1,18 +1,28 @@
-REEgion Select is an EE2 plugin and fieldtype that displays a list of:
+REEgion Select is an addon for ExpressionEngine&reg; 2 and 3 that displays dropdowns for:
 
 - countries (based on the ISO 3166-1 list of countries, dependent territories, and special areas of geographical interest)
-- US states (based on the USPS official list of US states and possessions)
+- U.S. states (based on the USPS official list of U.S. states and possessions)
 - Canadian provinces and territories
 - UK counties
 - Canadian provinces and U.S. states together (or U.S. States and Canadian provinces together)
 
 ##Fieldtype Usage
 
-To use the fieldtype, simply install and then choose REEgion Select from the fieldtype menu when creating a new custom field (or Matrix field), then choose which kind of regions you'd like to display.
+To use the fieldtype, simply install and then choose Reegion Select from the fieldtype menu when creating a new custom field, then choose which kind of regions you'd like to display.
 
 In your templates, display your custom field using `{field_name:name}` (or simply `{field_name}`) to display the name of the region (i.e., United States); `{field_name:alpha2}` to display the ISO 3166-2 code for the country, state, or province (i.e., US); or use `{field_name:alpha3}` to display the ISO 3166-1 code for the country (i.e., USA).
 
-##Plugin Usage
+If you choose the "multiselect" option for your field, you can use your field tag as a tag pair:
+
+    {field_name}
+        {region_name}
+		{region_alpha2}
+		{region_alpha3}
+		{region_count}
+		{total_regions}
+	{/field_name}
+
+##Template Usage
 
 Use the following EE tags to generate each type of dropdown `<select>` menu in your templates:
 
@@ -40,9 +50,9 @@ Or use a tag pair to generate your own custom lists or menus, using the followin
 
 (And likewise for the other region types.)
 
-##Plugin Parameters
+##Template Parameters
 
-REEgion Select accepts ten optional parameters:
+Reegion Select accepts ten optional parameters:
 
 - `show=""` -- A pipe-delimited list of values to show, if you don't want all of the default values to display. (e.g., `show="CA|NY|OH|MI"`)
 - `hide=""` -- A pipe-delimited list of values to hide, if you don't want all of the default values to display. (e.g., `hide="Canada|United States|Mexico"`)
@@ -59,7 +69,7 @@ REEgion Select accepts ten optional parameters:
 
 ## Low Variables Usage
 
-REEgion Select can also be used as a var type in the [Low Variables](http://devot-ee.com/add-ons/low-variables/) module. The resulting global variables will output the ISO 3166-2 abbreviation value for your region, but you can access the "name" or "alpha3" values by using the `{exp:low_variables:parse}` tag:
+Reegion Select can also be used as a var type in the [Low Variables](http://devot-ee.com/add-ons/low-variables/) module. The resulting global variables will output the ISO 3166-2 abbreviation value for your region, but you can access the "name" or "alpha3" values by using the `{exp:low_variables:parse}` tag:
 
 `{exp:low_variables:parse var="var_name" type="name"}`
 
@@ -67,4 +77,8 @@ REEgion Select can also be used as a var type in the [Low Variables](http://devo
    
 ##Compatibility
 
-This version of REEgion Select is only compatible with ExpressionEngine 2.1.3 or higher. The ExpressionEngine 1.6-compatible version [can be found here](http://github.com/amphibian/pi.reegion_select.ee_addon). REEgion Select can also be used as a [Low Variables](http://devot-ee.com/add-ons/low-variables/) var type, and REEgion Select fields are optimized for [Low Search](http://devot-ee.com/add-ons/low-search/) indexing.
+Reegion Select is compatible with ExpressionEngine 3.0.0 and greater, and ExpressionEngine 2.1.3 and greater. The ExpressionEngine 1.6-compatible plugin [can be found here](http://github.com/amphibian/pi.reegion_select.ee_addon).
+
+Reegion Select is fully-compatible with Grid field columns, and can also be used as a [Low Variables](http://devot-ee.com/add-ons/low-variables/) variable type.
+
+Reegion Select fields are also optimized for [Low Search](http://devot-ee.com/add-ons/low-search/) indexing.
