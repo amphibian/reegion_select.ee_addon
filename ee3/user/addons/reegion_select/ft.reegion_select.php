@@ -29,29 +29,33 @@ class Reegion_select_ft extends EE_Fieldtype {
 	);
 	public $provinces = array();
 	public $regions = array();
+	public $region_types = array();
 	public $states = array();
  			
 	function __construct()
 	{
-		$this->addon_info = ee('App')->get('reegion_select');
-		$this->info = array(
-			'name' => $this->addon_info->getName(),
-			'version' => $this->addon_info->getVersion(),
-		);
 		ee()->load->helper('form');
 		ee()->lang->loadfile('reegion_select');
+		$this->region_types = array(
+			'countries' => lang('rs_countries'),
+			'states' => lang('rs_states'),
+			'provinces' => lang('rs_provinces'),
+			'provinces_states' => lang('rs_provinces_states'),
+			'states_provinces' => lang('rs_states_provinces'),
+			'ukcounties' => lang('rs_ukcounties')
+		);
 	}	
 
 	function accepts_content_type($name)
 	{
 		return true;
 	}
-		
-	function display_settings($settings)
+
+	function display_settings($data)
 	{
 		$settings = array(
-			'field_options' => array(
-				'label' => 'field_options',
+			'reegion_select' => array(
+				'label' => $this->info['name'],
 				'group' => 'reegion_select',
 				'settings' => array(
 					array(
@@ -60,8 +64,8 @@ class Reegion_select_ft extends EE_Fieldtype {
 						'fields' => array(
 							'region_type' => array(
 								'type' => 'select',
-								'choices' => $this->_get_types(),
-								'value' => (isset($settings['region_type'])) ? $settings['region_type'] : ''
+								'choices' => $this->region_types,
+								'value' => (isset($data['region_type'])) ? $data['region_type'] : ''
 							)
 						)
 					),
@@ -71,7 +75,7 @@ class Reegion_select_ft extends EE_Fieldtype {
 						'fields' => array(
 							'multiselect' => array(
 								'type' => 'yes_no',
-								'value' => (isset($settings['multiselect']) && $settings['multiselect'] == 'y') ? 'y' : 'n'
+								'value' => (isset($data['multiselect']) && $data['multiselect'] == 'y') ? 'y' : 'n'
 							)
 						)
 					)
@@ -251,11 +255,10 @@ class Reegion_select_ft extends EE_Fieldtype {
 	
 	function display_cell_settings($settings)
 	{
-		$types = $this->_get_types();
 		return array(
 		    array(
 		    	lang('rs_region_type', 'region_type'),
-				form_dropdown('region_type', $types, (isset($settings['region_type'])) ? $settings['region_type'] : '')
+				form_dropdown('region_type', $this->region_types, (isset($settings['region_type'])) ? $settings['region_type'] : '')
 			),
 			array(
 				lang('rs_multiselect', 'multiselect'),
@@ -302,17 +305,5 @@ class Reegion_select_ft extends EE_Fieldtype {
 				break;				
 		}
 	}
-	
-	function _get_types()
-	{		
-		return array(
-			'countries' => lang('rs_countries'),
-			'states' => lang('rs_states'),
-			'provinces' => lang('rs_provinces'),
-			'provinces_states' => lang('rs_provinces_states'),
-			'states_provinces' => lang('rs_states_provinces'),
-			'ukcounties' => lang('rs_ukcounties')
-		);
-	}	
 
 }
