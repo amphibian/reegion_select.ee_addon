@@ -1,5 +1,6 @@
 <?php
-	
+
+include(PATH_THIRD.'/reegion_select/config.php');		
 return array(
       'author' => 'Amphibian',
       'author_url' => 'http://amphibian.info',
@@ -7,5 +8,5 @@ return array(
       'docs_url' => 'https://github.com/amphibian/reegion_select.ee_addon',
       'name' => 'Reegion Select',
       'namespace' => 'Amphibian\ReegionSelect',
-      'version' => '2.3'
+      'version' => REEGION_SELECT_VERSION
 );

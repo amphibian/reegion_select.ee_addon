@@ -19,13 +19,15 @@
     Copyright 2015 Derek Hogue
 */
 
+include(PATH_THIRD.'/reegion_select/config.php');		
+
 class Reegion_select_ft extends EE_Fieldtype {
 
 	public $countries_alpha3 = array();
 	public $has_array_data = true;
 	public $info = array(
 		'name' => 'Reegion Select',
-		'version' => '2.3'
+		'version' => REEGION_SELECT_VERSION
 	);
 	public $provinces = array();
 	public $regions = array();
