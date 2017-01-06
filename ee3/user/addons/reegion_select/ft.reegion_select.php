@@ -307,5 +307,14 @@ class Reegion_select_ft extends EE_Fieldtype {
 				break;				
 		}
 	}
+	
+	function update($current = '')
+	{
+		if($current == $this->info['version'])
+		{
+			return FALSE;
+		}
+		return TRUE;
+	}	
 
 }

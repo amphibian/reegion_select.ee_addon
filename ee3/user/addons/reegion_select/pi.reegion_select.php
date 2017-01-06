@@ -47,7 +47,7 @@ class Reegion_select {
 
 		$vars = array();
 		$i = 0;
-		$options = array('' => $title);
+		if($title !== 'null') $options = array('' => $title);
 				
 		if($style == 'dropdown')
 		{
@@ -59,6 +59,7 @@ class Reegion_select {
 			$required = ee()->TMPL->fetch_param('required', FALSE);
 			$selected = ee()->TMPL->fetch_param('selected', '');
 			$null_divider = ee()->TMPL->fetch_param('null_divider', 'y');
+			$lang = ee()->TMPL->fetch_param('language', 'en');
 			
 			$extra = 'class="'.trim($class).'"';
 			if($id)
@@ -102,15 +103,15 @@ class Reegion_select {
 				$regions = $states;
 				break;
 			case 'provinces':
-				$regions = $provinces;
+				$regions = ($lang == 'fr') ? $provinces_fr : $provinces;
 				break;
 		 	case 'provinces_states':
-				$regions[lang('rs_provinces')] = $provinces;
+				$regions[lang('rs_provinces')] = ($lang == 'fr') ? $provinces_fr : $provinces;
 				$regions[lang('rs_states')] = $states;
 				break;
 		 	case 'states_provinces':
 				$regions[lang('rs_states')] = $states;
-				$regions[lang('rs_provinces')] = $provinces;
+				$regions[lang('rs_provinces')] = ($lang == 'fr') ? $provinces_fr : $provinces;
 				break;
 			case 'ukcounties' :
 				$regions = $ukcounties;
