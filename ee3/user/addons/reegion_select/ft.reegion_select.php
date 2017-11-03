@@ -50,7 +50,7 @@ class Reegion_select_ft extends EE_Fieldtype {
 
 	public function accepts_content_type( $name )
 	{
-	    return ($name == 'channel' || $name == 'grid' || $name == 'blocks/1');
+	    return true;
 	}
 
 	function display_settings($data)

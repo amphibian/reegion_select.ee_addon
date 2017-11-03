@@ -1,4 +1,4 @@
-REEgion Select is an addon for ExpressionEngine&reg; 2 and 3 that displays dropdowns for:
+REEgion Select is an addon for ExpressionEngine&reg; 2, 3, and 4 that displays dropdowns for:
 
 - countries (based on the ISO 3166-1 list of countries, dependent territories, and special areas of geographical interest)
 - U.S. states (based on the USPS official list of U.S. states and possessions)
@@ -77,8 +77,8 @@ Reegion Select can also be used as a var type in the [Low Variables](http://devo
    
 ##Compatibility
 
-Reegion Select is compatible with ExpressionEngine 3.0.0 and greater, and ExpressionEngine 2.1.3 and greater. The ExpressionEngine 1.6-compatible plugin [can be found here](http://github.com/amphibian/pi.reegion_select.ee_addon).
+Reegion Select is compatible with ExpressionEngine 4.0.0 and greater, ExpressionEngine 3.0.0 and greater, and ExpressionEngine 2.1.3 and greater. The ExpressionEngine 1.6-compatible plugin [can be found here](http://github.com/amphibian/pi.reegion_select.ee_addon).
 
-Reegion Select is fully-compatible with Grid field columns, and can also be used as a [Low Variables](http://devot-ee.com/add-ons/low-variables/) variable type.
+Reegion Select is fully-compatible with Grid field columns, EE4's Fluid field, Bloqs fields, and can also be used as a [Low Variables](http://devot-ee.com/add-ons/low-variables/) variable type.
 
 Reegion Select fields are also optimized for [Low Search](http://devot-ee.com/add-ons/low-search/) indexing.
