@@ -2,5 +2,5 @@
 	
 	if( ! defined('REEGION_SELECT_VERSION') )
 	{
-		define('REEGION_SELECT_VERSION', '2.3.2');
+		define('REEGION_SELECT_VERSION', '2.3.3');
 	}

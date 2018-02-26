@@ -156,6 +156,10 @@ class Reegion_select_ft extends EE_Fieldtype {
 	
 	function replace_tag($data, $params = array(), $tagdata = FALSE)
 	{
+		if(is_array($data))
+		{
+			$data = implode('|', $data);
+		}
 		if(!empty($tagdata) && !empty($data))
 		{
 			// We're outputting (potentially) multiple values
