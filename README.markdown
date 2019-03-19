@@ -6,7 +6,7 @@ REEgion Select is an addon for ExpressionEngine&reg; 2, 3, and 4 that displays d
 - UK counties
 - Canadian provinces and U.S. states together (or U.S. States and Canadian provinces together)
 
-##Fieldtype Usage
+## Fieldtype Usage
 
 To use the fieldtype, simply install and then choose Reegion Select from the fieldtype menu when creating a new custom field, then choose which kind of regions you'd like to display.
 
@@ -22,7 +22,7 @@ If you choose the "multiselect" option for your field, you can use your field ta
 		{total_regions}
 	{/field_name}
 
-##Template Usage
+## Template Usage
 
 Use the following EE tags to generate each type of dropdown `<select>` menu in your templates:
 
@@ -50,7 +50,7 @@ Or use a tag pair to generate your own custom lists or menus, using the followin
 
 (And likewise for the other region types.)
 
-##Template Parameters
+## Template Parameters
 
 Reegion Select accepts ten optional parameters:
 
@@ -75,7 +75,7 @@ Reegion Select can also be used as a var type in the [Low Variables](http://devo
 
 `{exp:low_variables:parse var="var_name" type="alpha3"}`
    
-##Compatibility
+## Compatibility
 
 Reegion Select is compatible with ExpressionEngine 4.0.0 and greater, ExpressionEngine 3.0.0 and greater, and ExpressionEngine 2.1.3 and greater. The ExpressionEngine 1.6-compatible plugin [can be found here](http://github.com/amphibian/pi.reegion_select.ee_addon).
 

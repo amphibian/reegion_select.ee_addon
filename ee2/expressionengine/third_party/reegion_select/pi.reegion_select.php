@@ -34,7 +34,7 @@ class Reegion_select {
 	 * Constructor
 	*/
 	
-	function Reegion_select()
+	function __construct()
 	{
 		$this->EE =& get_instance();
 		$this->EE->load->helper('form');
